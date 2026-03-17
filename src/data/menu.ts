@@ -178,17 +178,17 @@ export const menu = [
     order: 4,
     items: [
       {
-        id: "refrigerante-lata",
-        slug: "refrigerante-lata",
-        name: "Refrigerante Lata",
-        description: "Refrigerante gelado 350ml.",
+        id: "coca-lata",
+        slug: "coca-lata",
+        name: "Coca Cola Lata",
+        description: "Coca Cola gelada 350ml.",
         price: {
           value: 6.00,
           currency: "BRL"
         },
         image: {
           url: "/icone-hamburguer.jpg",
-          alt: "Refrigerante lata 350ml"
+          alt: "Coca Cola Lata 350ml"
         },
         available: true,
         popular: true,
@@ -196,17 +196,53 @@ export const menu = [
         createdAt: "2026-01-01"
       },
       {
-        id: "refrigerante-600ml",
-        slug: "refrigerante-600ml",
-        name: "Refrigerante 600ml",
-        description: "Refrigerante gelado 600ml.",
+        id: "coca-1l",
+        slug: "coca-1l",
+        name: "Coca Cola 1L",
+        description: "Coca Cola gelada 1L.",
         price: {
-          value: 8.00,
+          value: 10.00,
           currency: "BRL"
         },
         image: {
           url: "/icone-hamburguer.jpg",
-          alt: "Refrigerante 600ml"
+          alt: "Coca Cola 1L"
+        },
+        available: true,
+        popular: true,
+        tags: ["drink"],
+        createdAt: "2026-01-01"
+      },
+      {
+        id: "guarana-lata",
+        slug: "guarana-lata",
+        name: "Guaraná Lata",
+        description: "Guaraná Antarctica gelado 350ml.",
+        price: {
+          value: 5.50,
+          currency: "BRL"
+        },
+        image: {
+          url: "/icone-hamburguer.jpg",
+          alt: "Guaraná Lata 350ml"
+        },
+        available: true,
+        popular: false,
+        tags: ["drink"],
+        createdAt: "2026-01-01"
+      },
+      {
+        id: "guarana-1l",
+        slug: "guarana-1l",
+        name: "Guaraná 1L",
+        description: "Guaraná Antarctica gelado 1L.",
+        price: {
+          value: 9.00,
+          currency: "BRL"
+        },
+        image: {
+          url: "/icone-hamburguer.jpg",
+          alt: "Guaraná 1L"
         },
         available: true,
         popular: false,
