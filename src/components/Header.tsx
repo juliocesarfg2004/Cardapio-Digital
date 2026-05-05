@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { menu } from "../data/menu";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/auth";
+import { useMenu } from "../hooks/useMenu";
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { user, logout } = useAuth();
+  const { data: menuData } = useMenu();
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -22,10 +26,10 @@ export function Header() {
 
     const term = searchTerm.toLowerCase();
     
-    for (const category of menu) {
+    for (const category of (menuData || [])) {
       const foundItem = category.items.find(item => 
         item.name.toLowerCase().includes(term) ||
-        item.description.toLowerCase().includes(term)
+        (item.description && item.description.toLowerCase().includes(term))
       );
       
       if (foundItem) {
@@ -42,7 +46,7 @@ export function Header() {
       }
       
       if (category.name.toLowerCase().includes(term)) {
-        scrollToSection(category.id);
+        scrollToSection(category.slug);
         break;
       }
     }
@@ -62,9 +66,9 @@ export function Header() {
     <>
       <nav className="sticky top-0 w-full bg-white shadow-[inset_0_-1px_0_#dcdcdc] z-50">
         <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-20">
-          <a href="#" className="shrink-0">
+          <Link to="/" className="shrink-0">
             <img src="../icone-ifood.png" alt="Ifood" className="h-12 w-auto" />
-          </a>
+          </Link>
 
           {/* Busca */}
           <form onSubmit={handleSearch} className="flex-1 max-w-md mx-6 hidden md:block">
@@ -89,18 +93,26 @@ export function Header() {
             </div>
           </form>
 
-          {/* Botões de navegação - Desktop */}
+          {/* Usuário / Login */}
           <div className="hidden md:flex items-center gap-2">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollToSection(item.id)}
+            {user ? (
+              <>
+                <span className="text-gray-600 text-sm font-medium">Olá, {user.name.split(' ')[0]}</span>
+                <button
+                  onClick={logout}
+                  className="px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg font-medium transition text-sm"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
                 className="px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg font-medium transition text-sm"
-                aria-label={`Navegar para ${item.label}`}
               >
-                {item.label}
-              </button>
-            ))}
+                Entrar
+              </Link>
+            )}
           </div>
 
           {/* Botão mobile */}
@@ -137,6 +149,24 @@ export function Header() {
                 </button>
               </li>
             ))}
+            <li className="border-t border-gray-100">
+              {user ? (
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-6 py-3 text-red-500 hover:bg-gray-50 font-medium transition"
+                >
+                  Sair ({user.name})
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="w-full text-left px-6 py-3 text-red-500 hover:bg-gray-50 font-medium transition"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Entrar / Cadastre-se
+                </Link>
+              )}
+            </li>
           </ul>
         </div>
       )}

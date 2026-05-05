@@ -1,24 +1,48 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCartStore } from '../store/cartStore'
+import { useAuth } from '../contexts/auth'
+import { useCreateOrder } from '../hooks/useOrders'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
-import { ArrowLeft, MapPin, CreditCard, DollarSign, MessageCircle } from 'lucide-react'
+import { ArrowLeft, MapPin, CreditCard, DollarSign, Loader2, CheckCircle } from 'lucide-react'
 
 export function Checkout() {
   const navigate = useNavigate()
+  const { user, isAuthenticated } = useAuth()
   const items = useCartStore((state) => state.items)
   const totalPrice = useCartStore((state) => state.totalPrice())
   const clearCart = useCartStore((state) => state.clearCart)
+  const createOrder = useCreateOrder()
 
-  const [name, setName] = useState('')
+  const [name, setName] = useState(user?.name || '')
   const [address, setAddress] = useState('')
   const [neighborhood, setNeighborhood] = useState('')
   const [complement, setComplement] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card' | 'cash'>('pix')
+  const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'CARD' | 'CASH'>('PIX')
+  const [observation, setObservation] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [orderSuccess, setOrderSuccess] = useState(false)
 
-  if (items.length === 0) {
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen flex flex-col items-center justify-center px-4">
+          <p className="text-gray-600 text-lg">Você precisa estar logado para finalizar o pedido.</p>
+          <button
+            onClick={() => navigate('/login')}
+            className="mt-4 bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition"
+          >
+            Fazer login
+          </button>
+        </main>
+        <Footer />
+      </>
+    )
+  }
+
+  if (items.length === 0 && !orderSuccess) {
     return (
       <>
         <Header />
@@ -47,29 +71,51 @@ export function Checkout() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleFinishOrder = () => {
+  const handleFinishOrder = async () => {
     if (!validate()) return
 
-    let message = `🍔 *Novo Pedido*\n\n`
-    message += `👤 *Cliente:* ${name}\n`
-    message += `📍 *Endereço:* ${address}, ${neighborhood}`
-    if (complement.trim()) message += ` - ${complement}`
-    message += `\n\n📋 *Itidos Pedido:*\n`
+    try {
+      await createOrder.mutateAsync({
+        items: items.map((item) => ({
+          menuItemId: item.id,
+          quantity: item.quantity,
+          observation: item.observation,
+        })),
+        paymentMethod,
+        address: `${address}, ${neighborhood}`,
+        complement: complement.trim() || undefined,
+        observation: observation.trim() || undefined,
+      })
 
-    items.forEach((item) => {
-      message += `• ${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}\n`
-      if (item.observation) message += `  _Obs: ${item.observation}_\n`
-    })
+      clearCart()
+      setOrderSuccess(true)
+    } catch {
+      setErrors({ general: 'Erro ao criar pedido. Tente novamente.' })
+    }
+  }
 
-    message += `\n💰 *Total:* R$ ${totalPrice.toFixed(2).replace('.', ',')}\n`
-    message += `💳 *Pagamento:* ${paymentMethod === 'pix' ? 'PIX' : paymentMethod === 'card' ? 'Cartão' : 'Dinheiro'}`
-
-    const phoneNumber = '5511999999999'
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
-
-    clearCart()
-    window.open(whatsappUrl, '_blank')
-    navigate('/')
+  if (orderSuccess) {
+    return (
+      <>
+        <Header />
+        <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+          <div className="bg-white rounded-lg shadow-sm p-8 max-w-md w-full text-center">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Pedido Realizado!</h2>
+            <p className="text-gray-600 mb-6">Seu pedido foi recebido e está sendo preparado.</p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => navigate('/')}
+                className="bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition"
+              >
+                Voltar ao cardápio
+              </button>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </>
+    )
   }
 
   return (
@@ -87,6 +133,12 @@ export function Checkout() {
           </button>
 
           <h1 className="text-2xl font-bold text-gray-800 mb-6">Finalizar Pedido</h1>
+
+          {errors.general && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4 text-sm">
+              {errors.general}
+            </div>
+          )}
 
           <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
@@ -173,6 +225,20 @@ export function Checkout() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
               </div>
+
+              <div>
+                <label htmlFor="obs" className="block text-sm font-medium text-gray-700 mb-1">
+                  Observação geral (opcional)
+                </label>
+                <input
+                  id="obs"
+                  type="text"
+                  value={observation}
+                  onChange={(e) => setObservation(e.target.value)}
+                  placeholder="Ex: Entregar no portão 2"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                />
+              </div>
             </div>
           </div>
 
@@ -184,9 +250,9 @@ export function Checkout() {
 
             <div className="grid grid-cols-3 gap-3">
               {[
-                { value: 'pix' as const, icon: DollarSign, label: 'PIX' },
-                { value: 'card' as const, icon: CreditCard, label: 'Cartão' },
-                { value: 'cash' as const, icon: DollarSign, label: 'Dinheiro' },
+                { value: 'PIX' as const, icon: DollarSign, label: 'PIX' },
+                { value: 'CARD' as const, icon: CreditCard, label: 'Cartão' },
+                { value: 'CASH' as const, icon: DollarSign, label: 'Dinheiro' },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -234,10 +300,17 @@ export function Checkout() {
 
           <button
             onClick={handleFinishOrder}
-            className="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition"
+            disabled={createOrder.isPending}
+            className="w-full bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white py-4 rounded-lg font-bold text-lg flex items-center justify-center gap-2 transition"
           >
-            <MessageCircle className="w-6 h-6" />
-            Enviar Pedido via WhatsApp
+            {createOrder.isPending ? (
+              <>
+                <Loader2 className="w-6 h-6 animate-spin" />
+                Enviando pedido...
+              </>
+            ) : (
+              'Finalizar Pedido'
+            )}
           </button>
         </div>
       </main>

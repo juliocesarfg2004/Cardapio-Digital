@@ -12,6 +12,7 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
   const items = useCartStore((state) => state.items)
   const removeItem = useCartStore((state) => state.removeItem)
   const updateQuantity = useCartStore((state) => state.updateQuantity)
+  const updateObservation = useCartStore((state) => state.updateObservation)
   const totalPrice = useCartStore((state) => state.totalPrice())
   
   const isOpen = externalOpen ?? false
@@ -70,11 +71,13 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                         />
                         <div className="flex-1">
                           <h3 className="font-medium">{item.name}</h3>
-                          {item.observation && (
-                            <p className="text-sm text-gray-500 italic mt-1 whitespace-pre-wrap break-words max-w-[180px]">
-                              Obs: {item.observation}
-                            </p>
-                          )}
+                          <input
+                            type="text"
+                            placeholder="Adicionar observação..."
+                            value={item.observation || ''}
+                            onChange={(e) => updateObservation(item.id, e.target.value)}
+                            className="text-sm text-gray-600 mt-1 w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-500"
+                          />
                           <p className="text-green-500 font-bold">
                             R$ {item.price.toFixed(2).replace('.', ',')}
                           </p>
