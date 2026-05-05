@@ -84,6 +84,7 @@ export function Header() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full py-2 pl-10 pr-4 text-gray-600 bg-gray-100 rounded-md outline-none focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 transition"
+                aria-label="Buscar produtos no cardápio"
               />
             </div>
           </form>
@@ -95,6 +96,7 @@ export function Header() {
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
                 className="px-3 py-2 text-gray-600 hover:text-red-500 hover:bg-gray-100 rounded-lg font-medium transition text-sm"
+                aria-label={`Navegar para ${item.label}`}
               >
                 {item.label}
               </button>
@@ -105,6 +107,8 @@ export function Header() {
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="md:hidden p-2 text-gray-700 rounded-md focus:outline-none"
+            aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={menuOpen}
           >
             {menuOpen ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">

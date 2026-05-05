@@ -111,6 +111,7 @@ function MenuSection({ category }: { category: MenuCategory }) {
                       size="icon" 
                       className="rounded-full w-10 h-10"
                       onClick={(e) => handleAddDrink(item, e)}
+                      aria-label={`Adicionar ${item.name} ao carrinho`}
                     >
                       <Plus className="w-5 h-5" />
                     </Button>
@@ -153,7 +154,7 @@ function MenuSection({ category }: { category: MenuCategory }) {
                       />
                       <span className="text-xs text-gray-400">{observation.length}/50</span>
                     </div>
-                    <Button className="w-full" onClick={handleAddToCart}>Adicionar ao carrinho</Button>
+                    <Button className="w-full" onClick={handleAddToCart} aria-label={`Adicionar ${selectedItem.name} ao carrinho`}>Adicionar ao carrinho</Button>
                   </div>
                 </>
               )}

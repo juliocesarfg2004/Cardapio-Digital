@@ -13,6 +13,8 @@ export function CartIcon() {
       <button
         className="fixed bottom-6 right-6 bg-red-500 hover:bg-red-600 text-white p-4 rounded-full shadow-lg transition-all hover:scale-110 z-40"
         onClick={() => setOpen(true)}
+        aria-label={`Abrir carrinho, ${totalItems} ${totalItems === 1 ? 'item' : 'itens'}`}
+        aria-live="polite"
       >
         <ShoppingCart className="w-6 h-6" />
         {totalItems > 0 && (

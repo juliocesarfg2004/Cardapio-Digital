@@ -1,4 +1,5 @@
 import { X, Minus, Plus, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useCartStore, type CartItem } from '../store/cartStore'
 
 interface CartDrawerProps {
@@ -7,6 +8,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps) {
+  const navigate = useNavigate()
   const items = useCartStore((state) => state.items)
   const removeItem = useCartStore((state) => state.removeItem)
   const updateQuantity = useCartStore((state) => state.updateQuantity)
@@ -16,6 +18,11 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
   
   const handleOpenChange = (open: boolean) => {
     onOpenChange?.(open)
+  }
+
+  const handleCheckout = () => {
+    handleOpenChange(false)
+    navigate('/checkout')
   }
 
   return (
@@ -40,6 +47,7 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                 <button
                   onClick={() => handleOpenChange(false)}
                   className="p-2 hover:bg-gray-100 rounded-full transition"
+                  aria-label="Fechar carrinho"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -74,6 +82,7 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="p-1 hover:bg-gray-100 rounded"
+                              aria-label={`Diminuir quantidade de ${item.name}`}
                             >
                               <Minus className="w-4 h-4" />
                             </button>
@@ -81,6 +90,7 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
                               className="p-1 hover:bg-gray-100 rounded"
+                              aria-label={`Aumentar quantidade de ${item.name}`}
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -89,6 +99,7 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                         <button
                           onClick={() => removeItem(item.id)}
                           className="text-red-500 hover:bg-red-50 p-2 rounded transition"
+                          aria-label={`Remover ${item.name} do carrinho`}
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -106,7 +117,11 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                       R$ {totalPrice.toFixed(2).replace('.', ',')}
                     </span>
                   </div>
-                  <button className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition">
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition"
+                    aria-label="Finalizar pedido"
+                  >
                     Finalizar Pedido
                   </button>
                 </div>
