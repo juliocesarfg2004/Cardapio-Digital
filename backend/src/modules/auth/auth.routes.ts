@@ -5,7 +5,6 @@ import { AuthController } from './auth.controller'
 const registerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  phone: z.string().min(10),
   password: z.string().min(6),
 })
 
@@ -27,11 +26,10 @@ export async function authRoutes(app: FastifyInstance) {
       description: 'Registrar novo usuário',
       body: {
         type: 'object',
-        required: ['name', 'email', 'phone', 'password'],
+        required: ['name', 'email', 'password'],
         properties: {
           name: { type: 'string', minLength: 2 },
           email: { type: 'string', format: 'email' },
-          phone: { type: 'string', minLength: 10 },
           password: { type: 'string', minLength: 6 },
         },
       },
@@ -45,7 +43,6 @@ export async function authRoutes(app: FastifyInstance) {
                 id: { type: 'string', format: 'uuid' },
                 name: { type: 'string' },
                 email: { type: 'string' },
-                phone: { type: 'string' },
                 role: { type: 'string' },
                 createdAt: { type: 'string', format: 'date-time' },
               },
@@ -88,7 +85,6 @@ export async function authRoutes(app: FastifyInstance) {
                 id: { type: 'string', format: 'uuid' },
                 name: { type: 'string' },
                 email: { type: 'string' },
-                phone: { type: 'string' },
                 role: { type: 'string' },
               },
             },

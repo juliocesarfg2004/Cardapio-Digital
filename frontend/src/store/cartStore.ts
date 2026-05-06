@@ -10,6 +10,7 @@ export interface CartItem {
   observation?: string
   pizzaType?: 'whole' | 'half-half'
   halfFlavor?: string
+  isDrink?: boolean
 }
 
 interface CartStore {
@@ -29,9 +30,11 @@ export const useCartStore = create<CartStore>()(
       items: [],
 
       addItem: (item) => {
-        const itemId = item.pizzaType === 'half-half'
+        const baseId = item.pizzaType === 'half-half'
           ? `${item.id}-half-${item.halfFlavor}`
           : item.id
+
+        const itemId = `${baseId}-${item.observation || ''}`
 
         const existingItem = get().items.find((i) => i.id === itemId)
         if (existingItem) {
@@ -66,9 +69,18 @@ export const useCartStore = create<CartStore>()(
       },
 
       updateObservation: (id, observation) => {
+        const item = get().items.find((i) => i.id === id)
+        if (!item) return
+
+        const baseId = item.pizzaType === 'half-half'
+          ? `${item.id.split('-half-')[0]}-half-${item.halfFlavor}`
+          : id.replace(/-\w+$/, '')
+
+        const newId = `${baseId}-${observation || ''}`
+
         set((state) => ({
           items: state.items.map((i) =>
-            i.id === id ? { ...i, observation } : i
+            i.id === id ? { ...i, observation, id: newId } : i
           ),
         }))
       },

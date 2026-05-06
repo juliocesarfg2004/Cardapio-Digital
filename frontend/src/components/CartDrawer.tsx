@@ -64,20 +64,24 @@ export function CartDrawer({ open: externalOpen, onOpenChange }: CartDrawerProps
                   <ul className="space-y-4">
                     {items.map((item: CartItem) => (
                       <li key={item.id} className="flex gap-4 p-3 border rounded-lg">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-20 h-20 object-cover rounded-lg"
-                        />
+                        {!item.isDrink && (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
+                        )}
                         <div className="flex-1">
                           <h3 className="font-medium">{item.name}</h3>
-                          <input
-                            type="text"
-                            placeholder="Adicionar observação..."
-                            value={item.observation || ''}
-                            onChange={(e) => updateObservation(item.id, e.target.value)}
-                            className="text-sm text-gray-600 mt-1 w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-500"
-                          />
+                          {!item.isDrink && (
+                            <input
+                              type="text"
+                              placeholder="Adicionar observação..."
+                              value={item.observation || ''}
+                              onChange={(e) => updateObservation(item.id, e.target.value)}
+                              className="text-sm text-gray-600 mt-1 w-full px-2 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-red-500"
+                            />
+                          )}
                           <p className="text-green-500 font-bold">
                             R$ {item.price.toFixed(2).replace('.', ',')}
                           </p>

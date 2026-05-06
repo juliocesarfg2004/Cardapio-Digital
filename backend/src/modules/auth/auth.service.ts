@@ -4,18 +4,13 @@ import jwt from 'jsonwebtoken'
 import { env } from '../../env'
 
 export class AuthService {
-  async register(data: { name: string; email: string; phone: string; password: string }) {
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: data.email },
-          { phone: data.phone },
-        ],
-      },
+  async register(data: { name: string; email: string; password: string }) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: data.email },
     })
 
     if (existingUser) {
-      throw new Error('E-mail ou telefone já cadastrado')
+      throw new Error('E-mail já cadastrado')
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 12)
@@ -24,14 +19,12 @@ export class AuthService {
       data: {
         name: data.name,
         email: data.email.toLowerCase(),
-        phone: data.phone,
         password: hashedPassword,
       },
       select: {
         id: true,
         name: true,
         email: true,
-        phone: true,
         role: true,
         createdAt: true,
       },
@@ -46,6 +39,13 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        role: true,
+      },
     })
 
     if (!user) {
@@ -66,7 +66,6 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
-        phone: user.phone,
         role: user.role,
       },
       accessToken,
@@ -96,10 +95,10 @@ export class AuthService {
   }
 
   private generateAccessToken(userId: string, role: string) {
-    return jwt.sign({ sub: userId, role }, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN })
+    return jwt.sign({ sub: userId, role }, env.JWT_SECRET, { expiresIn: env.JWT_EXPIRES_IN as any })
   }
 
   private generateRefreshToken(userId: string, role: string) {
-    return jwt.sign({ sub: userId, role }, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES_IN })
+    return jwt.sign({ sub: userId, role }, env.JWT_REFRESH_SECRET, { expiresIn: env.JWT_REFRESH_EXPIRES_IN as any })
   }
 }

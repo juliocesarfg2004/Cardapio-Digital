@@ -36,7 +36,7 @@ export class AdminService {
       where: status ? { status: status as any } : undefined,
       orderBy: { createdAt: 'desc' },
       include: {
-        user: { select: { name: true, email: true, phone: true } },
+        user: { select: { name: true, email: true } },
         items: { include: { menuItem: { select: { name: true } } } },
       },
     })

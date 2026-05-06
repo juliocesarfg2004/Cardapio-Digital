@@ -16,7 +16,6 @@ const addressSchema = z.object({
 
 const updateProfileSchema = z.object({
   name: z.string().min(2).optional(),
-  phone: z.string().min(10).optional(),
 })
 
 export async function usersRoutes(app: FastifyInstance) {
@@ -35,7 +34,6 @@ export async function usersRoutes(app: FastifyInstance) {
             id: { type: 'string', format: 'uuid' },
             name: { type: 'string' },
             email: { type: 'string' },
-            phone: { type: 'string' },
             role: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
             addresses: { type: 'array' },
@@ -55,7 +53,6 @@ export async function usersRoutes(app: FastifyInstance) {
         type: 'object',
         properties: {
           name: { type: 'string', minLength: 2 },
-          phone: { type: 'string', minLength: 10 },
         },
       },
     },

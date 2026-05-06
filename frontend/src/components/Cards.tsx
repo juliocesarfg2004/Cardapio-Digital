@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const categoryIcons: Record<string, string> = {
   hamburgers: "🍔",
@@ -64,6 +65,7 @@ function PizzaModal({
       pizzaType,
       halfFlavor: (!isWhole && secondFlavor?.name) || undefined,
     })
+    toast.success(`${displayName} adicionado ao carrinho!`)
 
     setFirstFlavor(null)
     setSecondFlavor(null)
@@ -213,9 +215,11 @@ function MenuSection({ category, allPizzas }: { category: MenuCategory; allPizza
       price: parseFloat(item.price),
       image: item.image || "/placeholder.jpg",
       observation: observation.trim() || undefined,
+      isDrink: isDrink,
     })
     setSelectedItem(null)
     setObservation("")
+    toast.success(`${item.name} adicionado ao carrinho!`)
   }
 
   const isDrink = category.slug === "drinks"

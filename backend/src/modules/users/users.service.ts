@@ -8,7 +8,6 @@ export class UsersService {
         id: true,
         name: true,
         email: true,
-        phone: true,
         role: true,
         createdAt: true,
         addresses: true,
@@ -22,7 +21,7 @@ export class UsersService {
     return user
   }
 
-  async updateProfile(userId: string, data: { name?: string; phone?: string }) {
+  async updateProfile(userId: string, data: { name?: string }) {
     return prisma.user.update({
       where: { id: userId },
       data: {
@@ -32,7 +31,6 @@ export class UsersService {
         id: true,
         name: true,
         email: true,
-        phone: true,
         role: true,
         updatedAt: true,
       },

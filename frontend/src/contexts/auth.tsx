@@ -5,7 +5,7 @@ interface AuthContextData {
   user: User | null
   isAuthenticated: boolean
   login: (email: string, password: string) => Promise<void>
-  register: (name: string, email: string, phone: string, password: string) => Promise<void>
+  register: (name: string, email: string, password: string) => Promise<void>
   logout: () => void
 }
 
@@ -29,8 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(response.user)
   }, [])
 
-  const register = useCallback(async (name: string, email: string, phone: string, password: string) => {
-    const response = await authService.register({ name, email, phone, password })
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    const response = await authService.register({ name, email, password })
     localStorage.setItem('@delivery:accessToken', response.accessToken)
     localStorage.setItem('@delivery:refreshToken', response.refreshToken)
     localStorage.setItem('@delivery:user', JSON.stringify(response.user))

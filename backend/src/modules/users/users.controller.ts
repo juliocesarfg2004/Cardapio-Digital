@@ -23,9 +23,9 @@ export class UsersController {
 
   updateProfile = async (request: FastifyRequest, reply: FastifyReply) => {
     const userId = request.userId
-    const { name, phone } = request.body as { name?: string; phone?: string }
+    const { name } = request.body as { name?: string }
 
-    const updated = await this.service.updateProfile(userId, { name, phone })
+    const updated = await this.service.updateProfile(userId, { name })
     return reply.send(updated)
   }
 

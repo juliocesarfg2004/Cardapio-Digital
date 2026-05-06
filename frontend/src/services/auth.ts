@@ -8,7 +8,6 @@ export interface LoginData {
 export interface RegisterData {
   name: string
   email: string
-  phone: string
   password: string
 }
 
@@ -16,7 +15,6 @@ export interface User {
   id: string
   name: string
   email: string
-  phone: string
   role: 'CUSTOMER' | 'ADMIN'
   createdAt: string
 }

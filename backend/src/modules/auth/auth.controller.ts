@@ -10,9 +10,9 @@ export class AuthController {
 
   register = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const { name, email, phone, password } = request.body as { name: string; email: string; phone: string; password: string }
+      const { name, email, password } = request.body as { name: string; email: string; password: string }
 
-      const result = await this.service.register({ name, email, phone, password })
+      const result = await this.service.register({ name, email, password })
 
       return reply.status(201).send(result)
     } catch (error) {
